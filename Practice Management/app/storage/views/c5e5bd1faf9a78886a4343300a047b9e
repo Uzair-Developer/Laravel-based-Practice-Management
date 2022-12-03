@@ -1,0 +1,4 @@
+<option value="">Choose</option>
+<?php foreach($clinics as $val): ?>
+    <option value="<?php echo $val['id']; ?>"><?php echo $val['name']; ?></option>
+<?php endforeach; ?>

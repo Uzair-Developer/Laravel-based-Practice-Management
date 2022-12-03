@@ -1,0 +1,1 @@
+Total Count: {{$allCountReservations}} , Attend Count: {{$attendCountReservations}}

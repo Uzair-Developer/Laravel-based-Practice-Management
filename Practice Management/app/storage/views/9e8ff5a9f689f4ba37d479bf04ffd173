@@ -1,0 +1,270 @@
+<?php $__env->startSection('title'); ?>
+    - Physicians
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('header'); ?>
+    <link rel="stylesheet" href="<?php echo asset('plugins/datatables/dataTables.bootstrap.css'); ?>">
+<?php $__env->stopSection(); ?>
+
+
+<?php $__env->startSection('footer'); ?>
+    <script src="<?php echo asset('plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+    <script src="<?php echo asset('plugins/datatables/dataTables.bootstrap.min.js'); ?>"></script>
+    <script>
+
+        $(".ask-me").click(function (e) {
+            e.preventDefault();
+            msg = $(this).attr('show-msg');
+            if (msg) {
+                if (confirm('Are You Sure? (' + msg + ')')) {
+                    window.location.replace($(this).attr('href'));
+                }
+            } else {
+                if (confirm('Are You Sure?')) {
+                    window.location.replace($(this).attr('href'));
+                }
+            }
+        });
+
+        $('#example1').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": true
+        });
+        $(function () {
+            $("#selectHospital2").change(function (e) {
+                $("#selectClinic2").attr('disabled', 'disabled');
+                $.ajax({
+                    url: '<?php echo route('getClinicsByHospitalId'); ?>',
+                    method: 'POST',
+                    data: {
+                        hospital_id: $(this).val()
+                    },
+                    headers: {token: '<?php echo csrf_token(); ?>'},
+                    success: function (data) {
+                        $("#selectClinic2").removeAttr('disabled').html(data).select2();
+                    }
+                });
+            });
+
+            $(".backToDrBtn, .upPublishBtn").click(function (e) {
+                e.preventDefault();
+                var href = $(this).attr('href');
+                $("#headNotesForm").attr('action', href);
+                $("#headNotesModal").modal('show');
+            });
+
+            <?php if(Input::get('hospital_id')): ?>
+            $.ajax({
+                        url: '<?php echo route('getClinicsByHospitalId'); ?>',
+                        method: 'POST',
+                        data: {
+                            hospital_id: $('#selectHospital2').val()
+                        },
+                        headers: {token: '<?php echo csrf_token(); ?>'},
+                        success: function (data) {
+                            $("#selectClinic2").html(data).select2();
+                            <?php if(Input::get('clinic_id')): ?>
+                            $("#selectClinic2").val('<?php echo Input::get('clinic_id'); ?>').select2();
+                            <?php endif; ?>
+
+
+                        }
+                    });
+            <?php endif; ?>
+
+
+        })
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <section class="content-header">
+        <h1>
+            List Physicians
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        Search
+                        <button type="button" class="btn btn-box-tool pull-right"
+                                data-widget="collapse">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                    <!-- /.box-header -->
+                    <?php echo Form::open(array('role'=>"form",'method' => 'GET')); ?>
+
+                    <div class="box-body">
+
+                        <div class="form-group col-md-3">
+                            <label>Hospital</label>
+                            <select id="selectHospital2" name="hospital_id" class="form-control select2">
+                                <option value="">Choose</option>
+                                <?php foreach($hospitals as $val): ?>
+                                    <option value="<?php echo $val['id']; ?>" <?php if(Input::get('hospital_id') == $val['id']): ?>
+                                    selected <?php endif; ?>><?php echo $val['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>Clinic</label>
+                            <select id="selectClinic2" name="clinic_id" class="form-control select2">
+                                <option value="">Choose</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>Physician Name</label>
+                            <input type="text" name="name" value="<?php echo Input::get('name'); ?>"
+                                   class="form-control">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>Profile Status</label>
+                            <select name="current_status" class="form-control select2">
+                                <option value="">Choose</option>
+                                <option value="0" <?php if(Input::get('current_status') === '0'): ?>
+                                selected <?php endif; ?>>No Actions
+                                </option>
+                                <option value="1" <?php if(Input::get('current_status') == 1): ?>
+                                selected <?php endif; ?>>Need To Approved
+                                </option>
+                                <option value="2" <?php if(Input::get('current_status') == 2): ?>
+                                selected <?php endif; ?>>Published
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                        <a href="<?php echo route('physicians'); ?>" class="btn btn-default">Clear</a>
+                    </div>
+                    <?php echo Form::close(); ?>
+
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="example1">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15px">#</th>
+                                    <th>Full Name</th>
+                                    <th>Activated?</th>
+                                    <th>Clinics</th>
+                                    <th>Options</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach($physicians as $physician): ?>
+                                    <tr>
+                                        <td><?php echo $physician['id']; ?></td>
+                                        <td>
+                                            <div style="width: 250px;"><?php echo $physician['full_name']; ?></div>
+                                        </td>
+                                        <td><?php if($physician['activated'] == 1): ?>
+                                                Yes
+                                            <?php else: ?>
+                                                No
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo $physician['clinic_name']; ?></td>
+                                        <td>
+                                            <div class="btn-group" style="width: 250px;">
+                                                <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('physician.edit')): ?>
+                                                    <a class="btn btn-default"
+                                                       href="<?php echo route('editPhysician', $physician['id']); ?>">Edit</a>
+                                                <?php endif; ?>
+                                                <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('physician.changeStatus')): ?>
+                                                    <?php if($physician['activated'] == 1): ?>
+                                                        <a class="btn btn-danger ask-me"
+                                                           <?php if($physician['user_type_id'] == 7): ?>
+                                                           show-msg="All Reservations Will Convert To
+                                                                be Cancelled"
+                                                           <?php endif; ?>
+                                                           href="<?php echo route('changeStatus', $physician['id']); ?>">
+                                                            Deactivate</a>
+                                                    <?php else: ?>
+                                                        <a class="btn btn-default ask-me"
+                                                           href="<?php echo route('changeStatus', $physician['id']); ?>">
+                                                            Activate</a>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                                <?php $userData = Sentry::findUserByID($physician['id']); ?>
+                                                <?php if($c_user->user_type_id == 1
+         /*if physician and head*/              || ($c_user->user_type_id == 7 && $c_user->hasAccess('head_dept.access') && !$userData->hasAccess('head_dept.access'))
+         /*if clinic manger and head*/          || ($c_user->user_type_id == 3 && $c_user->hasAccess('head_dept.access') && $userData->hasAccess('head_dept.access'))): ?>
+                                                    <?php if($c_user->id != $physician['id']): ?>
+                                                        <?php if(isset($physician['physicianData']['current_status']) &&
+                                                        $physician['physicianData']['current_status'] == 1): ?>
+                                                            <a class="btn btn-default ask-me"
+                                                               href="<?php echo route('changeProfileStatus', array($physician['id'], 'publish')); ?>">
+                                                                Publish</a>
+                                                        <?php endif; ?>
+                                                        <?php if(isset($physician['physicianData']['current_status']) &&
+                                                        $physician['physicianData']['current_status'] == 1): ?>
+                                                            <a class="btn btn-default backToDrBtn"
+                                                               href="<?php echo route('changeProfileStatus', array($physician['id'], 'back-to-dr')); ?>">
+                                                                Back To Dr</a>
+                                                        <?php endif; ?>
+                                                        <?php if(isset($physician['physicianData']['current_status']) &&
+                                                        $physician['physicianData']['current_status'] == 2): ?>
+                                                            <a class="btn btn-warning upPublishBtn"
+                                                               href="<?php echo route('changeProfileStatus', array($physician['id'], 'un-publish')); ?>">
+                                                                Un Publish</a>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="headNotesModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                                aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add Notes</h4>
+                </div>
+                <?php echo Form::open(array('role'=>"form", 'id' => 'headNotesForm', 'method' => 'GET')); ?>
+
+                <div class="modal-body col-md-12">
+                    <div class="form-group col-md-12">
+                        <label>Notes</label>
+                        <textarea required name="head_notes" class="form-control"></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <?php echo Form::close(); ?>
+
+            </div>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layout/main', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -1,0 +1,188 @@
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-aqua">
+        <div class="inner">
+            <h3><?php echo $total_res; ?></h3>
+
+            <p>Total Reservations</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-flag"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-gray">
+        <div class="inner">
+            <h3><?php echo $waiting_res; ?></h3>
+
+            <p>Reservations</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-clock"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-green-gradient">
+        <div class="inner">
+            <h3><?php echo $attend_res; ?></h3>
+
+            <p>Patient Attended</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-checkmark-circled"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+<?php if(app('production')): ?>
+    <div class="col-lg-4 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-green-gradient">
+            <div class="inner">
+                <h3><?php echo $total_paid; ?></h3>
+
+                <p>Total Paid</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-cash"></i>
+            </div>
+            <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+        </div>
+    </div>
+<?php endif; ?>
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-green-active">
+        <div class="inner">
+            <h3><?php echo $patient_in_res; ?></h3>
+
+            <p>Current Patient In Clinic</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-arrow-down-a"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-gray-active">
+        <div class="inner">
+            <h3><?php echo $patient_out_res; ?></h3>
+
+            <p>Patient Out</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-arrow-up-a"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-orange">
+        <div class="inner">
+            <h3><?php echo $pending_res + $pendingAndNotAttend; ?></h3>
+
+            <p>Pending</p>
+            <p>Pending & Attend: <?php echo $pending_res; ?></p>
+            <p>Pending & Not Attend: <?php echo $pendingAndNotAttend; ?></p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-clock"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-red">
+        <div class="inner">
+            <h3><?php echo $cancelled_res; ?></h3>
+
+            <p>Cancelled</p>
+            <?php foreach($cancelled_reason_res as $val): ?>
+                <p><?php echo $val['name'] . ': ' . $val['count']; ?></p>
+            <?php endforeach; ?>
+        </div>
+        <div class="icon">
+            <i class="ion ion-close"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-red">
+        <div class="inner">
+            <h3><?php echo $archive_res; ?></h3>
+
+            <p>Archive</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-edit"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-red">
+        <div class="inner">
+            <h3>
+                <?php if($no_show_res > 0): ?>
+                    <?php echo $no_show_res; ?>
+
+                <?php else: ?>
+                    0
+                <?php endif; ?>
+            </h3>
+
+            <p>No Show</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-eye-disabled"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-aqua">
+        <div class="inner">
+            <h3><?php echo $in_service_res; ?></h3>
+
+            <p>In Service</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-arrow-down-a"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>
+
+<div class="col-lg-4 col-xs-6">
+    <!-- small box -->
+    <div class="small-box bg-aqua">
+        <div class="inner">
+            <h3><?php echo $service_done_res; ?></h3>
+
+            <p>Service Done</p>
+        </div>
+        <div class="icon">
+            <i class="ion ion-checkmark-circled"></i>
+        </div>
+        <?php /*<a class="small-box-footer" >More info <i class="fa fa-arrow-circle-right"></i></a>*/ ?>
+    </div>
+</div>

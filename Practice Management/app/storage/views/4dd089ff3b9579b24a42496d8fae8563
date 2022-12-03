@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PMS <?php echo $__env->yieldContent('title'); ?></title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="<?php echo asset('bootstrap-files/css/bootstrap.min.css'); ?>">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="<?php echo asset('css/font-awesome/css/font-awesome.min.css'); ?>">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="<?php echo asset('css/ionicons/css/ionicons.min.css'); ?>">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="<?php echo asset('dist/css/AdminLTE.min.css'); ?>">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="<?php echo asset('dist/css/skins/_all-skins.min.css'); ?>">
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="<?php echo asset('plugins/iCheck/all.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('plugins/select2/select2.min.css'); ?>">
+    <?php /*<link rel="stylesheet" href="<?php echo asset('plugins/autocomplete/jquery.autocomplete.css'); ?>">*/ ?>
+    <style>
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            color: black !important;
+        }
+
+        .select2 {
+            width: 100%;
+        }
+
+        .line-through {
+            text-decoration: line-through
+        }
+    </style>
+    <?php echo $__env->yieldContent('header'); ?>
+    <style>
+        .ui-widget.ui-widget-content {
+            z-index: 2147483647;
+        }
+    </style>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+
+</head>
+<!-- ADD THE CLASS fixed TO GET A FIXED HEADER AND SIDEBAR LAYOUT -->
+<!-- the fixed layout is not compatible with sidebar-mini -->
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+    <header class="main-header">
+        <!-- Logo -->
+        <a class="logo" href="<?php echo route('home'); ?>">
+            <!-- mini logo for sidebar mini 50x50 pixels -->
+            <span class="logo-mini"><b>PMS</b></span>
+            <!-- logo for regular state and mobile devices -->
+
+            <span class="logo-lg">
+                    <b><img src="<?php echo asset('images/SGH.png'); ?>" height="45" width="155"></b>
+                </span>
+        </a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <!-- Sidebar toggle button-->
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <?php if($c_user->user_type_id == 7): ?>
+                        <?php $physicianData = Physician::getByPhysicianId($c_user->id); ?>
+                        <li class="">
+                            <a class="
+                            <?php if($physicianData): ?>
+                            <?php if($physicianData['current_status'] == 0): ?>
+                                    bg-gray
+                                    <?php elseif($physicianData['current_status'] == 1): ?>
+                                    bg-orange
+                                    <?php elseif($physicianData['current_status'] == 2): ?>
+                                    bg-green
+                                <?php endif; ?>
+                            <?php else: ?>
+                                    bg-gray
+                                    <?php endif; ?>
+                                    btn btn-block
+                            " href="<?php echo route('editProfile'); ?>" style="color:black;">
+                                <i class="fa fa-user"></i> Profile</a>
+                        </li>
+                    <?php endif; ?>
+                    <li class="">
+                        <a style="cursor: pointer;" data-target="#myModalAgent" data-toggle="modal">
+                            <i class="fa fa-edit"></i> Add Announcement
+                        </a>
+                    </li>
+                    <?php if($c_user->user_type_id == 7): ?>
+                        <?php if($c_user->is_ready == 1): ?>
+                            <li class="">
+                                <a style="cursor: pointer;" class="btn btn-block btn-success"
+                                   data-target="#notReadyReasonModal"
+                                   data-toggle="modal">
+                                    Now: Ready
+                                </a>
+                            </li>
+                        <?php else: ?>
+                            <li class="">
+                                <a style="cursor: pointer;" class="btn btn-block btn-danger"
+                                   href="<?php echo route('userReadyMonitor'); ?>">
+                                    Now: Not Ready
+                                </a>
+                            </li>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <!-- User Account: style can be found in dropdown.less -->
+                    <li class="dropdown user user-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <?php if($user->image_url): ?>
+                                <img src="<?php echo asset($user->image_url); ?>" class="user-image"
+                                     title="<?php echo $user->image_url; ?>"
+                                     alt="<?php echo $user->image_url; ?>">
+                            <?php else: ?>
+                                <img src="<?php echo asset('dist/img/avatar5.png'); ?>" class="user-image"
+                                     title="User Image"
+                                     alt="User Image">
+                            <?php endif; ?>
+                            <span class="hidden-xs"><?php echo $user->user_name; ?></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <!-- User image -->
+                            <li class="user-header">
+                                <?php if($user->image_url): ?>
+                                    <img src="<?php echo asset($user->image_url); ?>" class="img-circle"
+                                         title="<?php echo $user->image_url; ?>" alt="<?php echo $user->image_url; ?>">
+                                <?php else: ?>
+                                    <img src="<?php echo asset('dist/img/avatar5.png'); ?>" class="img-circle"
+                                         title="User Image"
+                                         alt="User Image">
+                                <?php endif; ?>
+                                <p>
+                                    <?php echo $user->full_name; ?>
+
+                                    <?php /*<small>Member since Nov. 2012</small>*/ ?>
+                                </p>
+                            </li>
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <div class="pull-left">
+                                    <a href="<?php echo route('editProfile'); ?>"
+                                       class="btn btn-default btn-flat">Profile</a>
+                                </div>
+                                <div class="pull-right">
+                                    <a href="<?php echo route('logout'); ?>" class="btn btn-default btn-flat">Sign out</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Control Sidebar Toggle Button -->
+                    <li>
+                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- =============================================== -->
+
+    <!-- Left side column. contains the sidebar -->
+    <aside class="main-sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+            <!-- sidebar menu: : style can be found in sidebar.less -->
+            <ul class="sidebar-menu">
+                <?php if($user->user_type_id != 0): ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('user.list')): ?>
+                        <li><a href="<?php echo route('users'); ?>"><i class="fa fa fa-users"></i><span>Users</span></a></li>
+                    <?php endif; ?>
+                    <?php if($user->hasAccess('patient.list') || $user->user_type_id == 1): ?>
+                        <li>
+                            <a href="<?php echo route('listPatient'); ?>">
+                                <i class="fa fa-users"></i> <span>Patients</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->user_type_id == 2 || $user->hasAccess('permissions.list')): ?>
+                        <li>
+                            <a href="<?php echo route('listGroup'); ?>">
+                                <i class="fa fa-gear"></i> <span>Permissions Group</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->hasAccess('agentComment.list') || $user->user_type_id == 1): ?>
+                        <li>
+                            <a href="<?php echo route('listAgentComment'); ?>">
+                                <i class="fa fa-th"></i> <span>Announcements</span>
+                                <?php if($agentComments): ?>
+                                    <small class="label pull-right bg-green">New</small>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('manageReservation.list')): ?>
+                        <?php if($user->user_type_id != \core\enums\UserRules::patientRelation): ?>
+                            <li>
+                                <a href="<?php echo route('manageClinicReservations'); ?>?date_from=<?php echo date('Y-m-d'); ?>&date_to=<?php echo date('Y-m-d'); ?>"><i
+                                            class="fa fa fa-users"></i>
+                                    <span>All Reservations</span>&nbsp;
+                                    <?php if($c_user->user_type_id == \core\enums\UserRules::physician): ?>
+                                        <?php if($countNewWalkInReservation): ?>
+                                            <small class="label bg-orange"><?php echo ($countNewWalkInReservation); ?>
+
+                                                New
+                                            </small>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    <?php if($c_user->user_type_id == \core\enums\UserRules::receptionPersonnel
+                                    || $c_user->user_type_id == \core\enums\UserRules::clinicManager
+                                    || $c_user->user_type_id == 1): ?>
+                                        <?php if($countNewWalkInReservation): ?>
+                                            <small class="label bg-orange"><?php echo ($countNewWalkInReservation); ?>
+
+                                                N
+                                            </small>
+                                        <?php endif; ?>
+                                        <?php if($countApprovalWalkInReservation): ?>
+                                            <small class="label bg-green"><?php echo ($countApprovalWalkInReservation); ?>
+
+                                                A
+                                            </small>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || ($user->user_type_id == 7 && $user->hasAccess('manageReservation.list'))): ?>
+                        <li>
+                            <a href="<?php echo route('manageClinicReservations'); ?>?today_only=1&date_from=<?php echo date('Y-m-d'); ?>&date_to=<?php echo date('Y-m-d'); ?>">
+                                <i class="fa fa fa-users"></i> <span>Today Reservations
+                                    </span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('standAlonReservation.list')): ?>
+                        <li>
+                            <a href="<?php echo route('standAloneRevisit'); ?>">
+                                <i class="fa fa fa-gears"></i> <span>Stand Alone Res</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('clinic_pms.times_availability')): ?>
+                        <li>
+                            <a href="<?php echo route('getClinicAvailability'); ?>">
+                                <i class="fa fa fa-gears"></i> <span>Clinic Availability</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('complain.list')): ?>
+                        <li>
+                            <a href="<?php echo route('listComplain'); ?>">
+                                <i class="fa fa fa-gears"></i> <span>Complaints</span>
+                                <?php if($newComplains): ?>
+                                    <small class="label pull-right bg-green"><?php echo count($newComplains); ?> New</small>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('physician_attribute.list')): ?>
+                        <li><a href="<?php echo route('listPhysicianAttribute'); ?>"><i class="fa fa-gear"></i>
+                                <span>Profile Settings</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('physician.list')): ?>
+                        <li><a href="<?php echo route('physicians'); ?>"><i class="fa fa-gear"></i>
+                                <span>Doctors</span>&nbsp;
+                                <?php if($physicianNoAction): ?>
+                                    <small class="label bg-gray"><?php echo $physicianNoAction; ?>E</small>
+                                <?php endif; ?>
+                                <?php if($physicianNeedApprove): ?>
+                                    <small class="label bg-orange"><?php echo $physicianNeedApprove; ?>P</small>
+                                <?php endif; ?>
+                                <?php if($physicianPublish): ?>
+                                    <small class="label bg-green"><?php echo $physicianPublish; ?>A</small>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('physicianSchedule.list')): ?>
+                        <li><a href="<?php echo route('physicianSchedules'); ?>"><i class="fa fa fa-gear"></i>
+                                <span>Doctor Schedules</span>
+                            </a></li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('physicianScheduleException.list')): ?>
+                        <li><a href="<?php echo route('listPhysicianScheduleException'); ?>"><i class="fa fa fa-gear"></i>
+                                <span>Dr Schedules Exception</span>
+                            </a></li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('physicianException.list')): ?>
+                        <li><a href="<?php echo route('physicianExceptions'); ?>"><i class="fa fa fa-gear"></i>
+                                <span>Dr. Exceptions</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <?php if($countPendingException): ?>
+                                    <small class="label bg-orange"><?php echo count($countPendingException); ?></small>
+                                <?php endif; ?>
+                                <?php if($user->user_type_id == 7): ?>
+                                    <?php if($countApprovedException): ?>
+                                        <small class="label bg-green"><?php echo count($countApprovedException); ?></small>
+
+                                    <?php endif; ?>
+                                    <?php if($countNotApprovedException): ?>
+                                        <small class="label bg-red"><?php echo count($countNotApprovedException); ?></small>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('physicianCalendar.list')): ?>
+                        <li><a href="<?php echo route('viewCalendar'); ?>"><i class="fa fa fa-calendar"></i>
+                                <span>Doctor Calendar</span>
+                            </a></li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('reservation.list')): ?>
+                        <li style="cursor: pointer;"><a data-target="#myModalReservation" data-toggle="modal"><i
+                                        class="fa fa fa-gears"></i>
+                                <span>Booking</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('patientLapRadiology.list')): ?>
+                        <li><a href="<?php echo route('listPatientLapRadiology'); ?>"><i class="fa fa fa-gears"></i>
+                                <span>Lab Results</span>
+                            </a></li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('patient_attend.list')): ?>
+                        <li><a href="<?php echo route('listPatientAttend'); ?>"><i class="fa fa fa-gears"></i>
+                                <span>Patient Attend</span>
+                            </a></li>
+                    <?php endif; ?>
+
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('pmsDiagnosis.list')): ?>
+                        <li>
+                            <a href="<?php echo route('pmsDiagnosis'); ?>"><i class="fa fa fa-gears"></i>
+                                <span>PMS Diagnosis</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('reports.physician_reports') || $user->hasAccess('reports.clinic_reports')
+                    || $user->hasAccess('reports.physician_exception_reports')): ?>
+                        <li class="treeview" id="pms_menu">
+                            <a href="#">
+                                <i class="fa fa-dashboard"></i> <span>Reports</span> <i
+                                        class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu">
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('reports.physician_reports')): ?>
+                                    <li><a href="<?php echo route('getPhysicianReports'); ?>"><i class="fa fa-gear"></i>
+                                            <span>Doctor Report</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('reports.clinic_reports')): ?>
+                                    <li><a href="<?php echo route('getClinicReports'); ?>"><i class="fa fa fa-gears"></i>Clinic
+                                            Reports</a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('reports.physician_exception_reports')): ?>
+                                    <li><a href="<?php echo route('getPhysicianExceptionReports'); ?>"><i
+                                                    class="fa fa fa-gears"></i>Dr Exception
+                                            Reports</a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('answerType.list') || $user->hasAccess('question.list')
+                    || $user->hasAccess('surveyGroup.list') || $user->hasAccess('survey.list')
+                    || $user->hasAccess('patientSurvey.list') || $user->hasAccess('patientSurvey.report')): ?>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-tint"></i> <span>Survey</span> <i
+                                        class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu">
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('answerType.list')): ?>
+                                    <li>
+                                        <a href="<?php echo route('listAnswerType'); ?>">
+                                            <i class="fa fa fa-gears"></i> <span>Answer Types</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('question.list')): ?>
+                                    <li>
+                                        <a href="<?php echo route('listQuestion'); ?>">
+                                            <i class="fa fa fa-gears"></i> <span>Questions</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('surveyGroup.list')): ?>
+                                    <li>
+                                        <a href="<?php echo route('listSurveyGroup'); ?>">
+                                            <i class="fa fa fa-gears"></i> <span>Survey Groups</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('survey.list')): ?>
+                                    <li>
+                                        <a href="<?php echo route('listSurvey'); ?>">
+                                            <i class="fa fa fa-gears"></i> <span>Surveys</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('patientSurvey.list')): ?>
+                                    <li>
+                                        <a href="<?php echo route('listPatientSurvey'); ?>">
+                                            <i class="fa fa fa-gears"></i> <span>Patient Surveys</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if($user->user_type_id == 1 || $user->hasAccess('patientSurvey.report')): ?>
+                                    <li>
+                                        <a href="<?php echo route('reportCountsPatientSurvey'); ?>">
+                                            <i class="fa fa fa-gears"></i> <span>Report</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    <?php if($user->user_type_id == 1 || $user->hasAccess('manageReservation.view_history')): ?>
+                        <li>
+                            <a href="<?php echo route('reservationHistory'); ?>?hospital_id=2&date_from=<?php echo date('Y-m-d'); ?>&date_to=<?php echo date('Y-m-d'); ?>"><i
+                                        class="fa fa fa-eye"></i>
+                                <span>Reservations History</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php $show_pms = false; ?>
+                    <li class="treeview" id="pms_menu">
+                        <a href="#">
+                            <i class="fa fa-dashboard"></i> <span>PMS Menu</span> <i
+                                    class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <?php if($user->user_type_id == 1 || $user->hasAccess('AttributePms.list')): ?>
+                                <?php $show_pms = true; ?>
+                                <li><a href="<?php echo route('listAttributePms'); ?>"><i class="fa fa fa-gears"></i>Pms Attribute</a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if($user->user_type_id == 1 || $user->hasAccess('publicHoliday.list')): ?>
+                                <?php $show_pms = true; ?>
+                                <li class="treeview">
+                                    <a href="#">
+                                        <i class="fa fa-gears"></i> <span>System</span> <i
+                                                class="fa fa-angle-left pull-right"></i>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        <?php if($user->user_type_id == 1): ?>
+                                            <li><a href="<?php echo route('systemRoot'); ?>"><i class="fa fa-laptop"></i> System
+                                                    Root</a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if($user->user_type_id == 1 || $user->hasAccess('publicHoliday.list')): ?>
+                                            <li><a href="<?php echo route('publicHoliday'); ?>"><i class="fa fa-globe"></i> Public
+                                                    Holidays</a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if($user->user_type_id == 1 || $user->hasAccess('hospital.list')): ?>
+                                <?php $show_pms = true; ?>
+                                <li><a href="<?php echo route('hospitals'); ?>"><i class="fa fa fa-heartbeat"></i>Hospitals</a>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if($user->user_type_id == 1 || $user->hasAccess('smsCampaign.access')): ?>
+                                <?php $show_pms = true; ?>
+                                <li><a href="<?php echo route('smsCampaign'); ?>"><i class="fa fa fa-envelope"></i>SMS
+                                        Campaign</a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if($user->user_type_id == 1 || $user->hasAccess('clinic_pms.list') || $user->hasAccess('clinicSchedule.list')): ?>
+                                <?php $show_pms = true; ?>
+                                <li class="treeview">
+                                    <a href="#">
+                                        <i class="fa fa-tint"></i> <span>Clinics</span> <i
+                                                class="fa fa-angle-left pull-right"></i>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        <?php if($user->user_type_id == 1 || $user->hasAccess('clinic_pms.list')): ?>
+                                            <li><a href="<?php echo route('clinics'); ?>"><i class="fa fa fa-table"></i> Manage
+                                                    Clinics</a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if($user->user_type_id == 1 || $user->hasAccess('clinicSchedule.list')): ?>
+                                            <li><a href="<?php echo route('clinicSchedules'); ?>"><i class="fa fa fa-calendar"></i>
+                                                    Clinic
+                                                    Schedules</a></li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if($user->user_type_id == 1): ?>
+                                <?php $show_pms = true; ?>
+                                <li class="treeview">
+                                    <a href="#">
+                                        <i class="fa fa-tint"></i> <span>Website</span> <i
+                                                class="fa fa-angle-left pull-right"></i>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        <li>
+                                            <a href="<?php echo route('websiteSettings'); ?>"><i class="fa fa fa-table"></i>
+                                                Website Settings</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if($user->user_type_id == 1 || $user->hasAccess('ipToScreen.list')): ?>
+                                <?php $show_pms = true; ?>
+                                <li><a href="<?php echo route('ipToScreen'); ?>"><i class="fa fa fa-gears"></i>IP To Screen</a>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if($user->user_type_id == 1 || $user->hasAccess('ipToRoom.list')): ?>
+                                <?php $show_pms = true; ?>
+                                <li><a href="<?php echo route('ipToRoom'); ?>"><i class="fa fa fa-gears"></i>IP To Room</a>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if($user->user_type_id == 1 || $user->hasAccess('manageReservation.open_close')): ?>
+                                <?php $show_pms = true; ?>
+                                <li><a href="<?php echo route('reservationManage'); ?>"><i class="fa fa fa-users"></i>
+                                        Clinic Opening</a></li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+                <li class="treeview" id="diagnosis_menu">
+                    <?php $show_diagnosis = false; ?>
+                    <a href="#">
+                        <i class="fa fa-user"></i> <span>Diagnosis Menu</span> <i
+                                class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <?php if($user->hasAccess('country.list') || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li class="treeview">
+                                <a href="<?php echo route('listCountry'); ?>">
+                                    <i class="fa fa-gears"></i> <span>Countries</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if($user->hasAccess('organ.list') || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li><a href="<?php echo route('listOrgan'); ?>"><i class="fa fa-gears "></i>Organs</a></li>
+                        <?php endif; ?>
+                        <?php if($user->hasAccess('clinic.list') || $user->hasAccess('clinicSpecialty.list')
+                        || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li class="treeview">
+                                <a href="#">
+                                    <i class="fa fa-tint"></i> <span>Clinics</span> <i
+                                            class="fa fa-angle-left pull-right"></i>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <?php if($user->hasAccess('clinic.list') || $user->user_type_id == 1): ?>
+                                        <?php $show_diagnosis = true; ?>
+                                        <li><a href="<?php echo route('dListClinic'); ?>"><i class="fa fa fa-gears"></i>Manage
+                                                Clinics</a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if($user->hasAccess('clinicSpecialty.list') || $user->user_type_id == 1): ?>
+                                        <?php $show_diagnosis = true; ?>
+                                        <li><a href="<?php echo route('listSpecialty'); ?>"><i class="fa fa fa-gears"></i>Manage
+                                                Specialties</a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
+                        <?php if($user->hasAccess('symptom.list') || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li><a href="<?php echo route('listSymptom'); ?>"><i class="fa fa-flash"></i>Symptoms</a></li>
+                        <?php endif; ?>
+                        <?php if($user->hasAccess('disease.list') || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li><a href="<?php echo route('listDisease'); ?>"><i class="fa fa-heartbeat"></i>Diseases</a></li>
+                        <?php endif; ?>
+                        <?php if($user->hasAccess('diagnosis.list') || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li class="treeview">
+                                <a href="<?php echo route('startDiagnosis1'); ?>">
+                                    <i class="fa fa-heartbeat"></i> <span>Start Diagnosis</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if($user->hasAccess('pendingRelation.list') || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li>
+                                <a href="<?php echo route('diseaseSymptomsPending'); ?>">
+                                    <i class="fa fa-th"></i> <span>Pending Relations</span>
+                                    <?php if($diseaseSymptomsPending): ?>
+                                        <small class="label pull-right bg-green">new</small>
+                                    <?php endif; ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if($user->hasAccess('symptomComment.list') || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li class="treeview">
+                                <a href="<?php echo route('listComment', 'symptom'); ?>">
+                                    <i class="fa fa-heartbeat"></i> <span>Symptom Comments</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if($user->hasAccess('instruction.list') || $user->user_type_id == 1): ?>
+                            <?php $show_diagnosis = true; ?>
+                            <li>
+                                <a href="<?php echo route('editInstruction' ,1); ?>">
+                                    <i class="fa fa-gear"></i> <span>Instructions</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- =============================================== -->
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+    <?php echo $__env->make('layout/flashMessages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
+    <!-- Main content -->
+    <?php echo $__env->yieldContent('content'); ?>
+    <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+            <b>Version</b> 1.0
+        </div>
+        <strong>Copyright &copy; 2016-2017 <a>JTech</a>.</strong> All rights
+        reserved.
+    </footer>
+</div>
+<!-- ./wrapper -->
+
+
+<div class="modal fade" id="myModalReservation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Reservation Menu</h4>
+            </div>
+            <?php echo Form::open(array('role'=>"form", 'route' => 'reservationAdd')); ?>
+
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label>Hospital</label>
+                    <br>
+                    <select autocomplete="off" id="selectHospital" required name="hospital_id"
+                            class="form-control select2" style="width:400px">
+                        <option value="">Choose</option>
+                        <?php foreach($hospitals as $val): ?>
+                            <option value="<?php echo $val['id']; ?>" <?php if(Input::old('hospital_id') == $val['id']): ?>
+                            selected <?php endif; ?>><?php echo $val['name']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Clinic/Specialty</label>
+                    <br>
+                    <select autocomplete="off" id="selectClinic" required name="clinic_id" class="form-control select2"
+                            style="width:400px">
+                        <option value="">Choose</option>
+                    </select>
+                </div>
+
+                <?php /*<div class="form-group">*/ ?>
+                <?php /*<label>Physician Experience</label>*/ ?>
+                <?php /*<br>*/ ?>
+                <?php /*<select autocomplete="off" id="user_experience_id" name="user_experience_id"*/ ?>
+                <?php /*class="form-control select2" style="width:400px">*/ ?>
+                <?php /*<option value="">Choose</option>*/ ?>
+                <?php /*<?php foreach($experience as $val): ?>*/ ?>
+                <?php /*<option value="<?php echo $val['id']; ?>"*/ ?>
+                <?php /*<?php if(Input::old('user_experience_id') == $val['id']): ?>*/ ?>
+                <?php /*selected <?php endif; ?>><?php echo $val['name']; ?></option>*/ ?>
+                <?php /*<?php endforeach; ?>*/ ?>
+                <?php /*</select>*/ ?>
+                <?php /*</div>*/ ?>
+
+                <?php /*<div class="form-group">*/ ?>
+                <?php /*<label>Physician Specialty</label>*/ ?>
+                <?php /*<br>*/ ?>
+                <?php /*<select autocomplete="off" id="user_specialty_id" name="user_specialty_id"*/ ?>
+                <?php /*class="form-control select2" style="width:400px">*/ ?>
+                <?php /*<option value="">Choose</option>*/ ?>
+                <?php /*<?php foreach($specialty as $val): ?>*/ ?>
+                <?php /*<option value="<?php echo $val['id']; ?>"><?php echo $val['name']; ?></option>*/ ?>
+                <?php /*<?php endforeach; ?>*/ ?>
+                <?php /*</select>*/ ?>
+                <?php /*</div>*/ ?>
+
+                <div class="form-group">
+                    <label>Physician</label>
+                    <br>
+                    <select autocomplete="off" id="selectPhysician" required name="physician_id"
+                            class="form-control select2" style="width:400px">
+                        <option value="">Choose</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Confirm</button>
+            </div>
+            <?php echo Form::close(); ?>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="myModalAgent" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add Announcement</h4>
+            </div>
+            <?php echo Form::open(array('role'=>"form", 'route' => 'createAgentComment')); ?>
+
+            <div class="modal-body col-md-12">
+                <div class="form-group col-md-12">
+                    <label>All Users</label>
+                    <input id="all_users"
+                           autocomplete="off" class="icheckbox_flat-blue" name="all_users" type="checkbox">
+                </div>
+
+                <div class="form-group col-md-12 filter_announcement">
+                    <label>Users</label>
+                    <br>
+                    <select name="user_id[]" class="form-control select2" multiple style="width: 400px">
+                        <option value="">Choose</option>
+                        <?php foreach($users as $val): ?>
+                            <option value="<?php echo $val['id']; ?>"><?php echo $val['full_name']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group col-md-12 filter_announcement">
+                    <label>Group Name</label>
+                    <br>
+                    <select name="group_id[]" class="form-control select2" multiple style="width: 400px">
+                        <option value="">Choose</option>
+                        <?php foreach($groups as $val): ?>
+                            <option value="<?php echo $val['id']; ?>"><?php echo $val['name']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label>Notes</label>
+                    <textarea required name="notes" class="form-control"></textarea>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            <?php echo Form::close(); ?>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notReadyReasonModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Not Ready Reason</h4>
+            </div>
+            <?php echo Form::open(array('role'=>"form", 'route' => 'userNotReadyMonitor')); ?>
+
+            <div class="modal-body col-md-12">
+
+                <div class="form-group col-md-12 filter_announcement">
+                    <label>Reason</label>
+                    <br>
+                    <select required name="not_ready_reason_id" class="form-control select2" style="width: 400px">
+                        <option value="">Choose</option>
+                        <?php foreach($notReadyReason as $key => $val): ?>
+                            <option value="<?php echo $val['id']; ?>"><?php echo $val['name']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            <?php echo Form::close(); ?>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- jQuery 2.1.4 -->
+<script src="<?php echo asset('plugins/jQuery/jQuery-2.1.4.min.js'); ?>"></script>
+<script src="<?php echo asset('plugins/jQueryUI/jquery-ui.min.js'); ?>"></script>
+<!-- Bootstrap 3.3.5 -->
+<script src="<?php echo asset('bootstrap-files/js/bootstrap.min.js'); ?>"></script>
+<!-- SlimScroll -->
+<script src="<?php echo asset('plugins/slimScroll/jquery.slimscroll.min.js'); ?>"></script>
+<!-- FastClick -->
+<script src="<?php echo asset('plugins/fastclick/fastclick.min.js'); ?>"></script>
+<!-- iCheck 1.0.1 -->
+<script src="<?php echo asset('plugins/iCheck/icheck.min.js'); ?>"></script>
+<!-- AdminLTE App -->
+<script src="<?php echo asset('dist/js/app.min.js'); ?>"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="<?php echo asset('dist/js/demo.js'); ?>"></script>
+<script src="<?php echo asset('plugins/select2/select2.full.min.js'); ?>"></script>
+<script>
+    function getFormData(form) {
+        var o = {};
+        var a = form;
+        $.each(a, function () {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    }
+
+    $(function () {
+        $(".select2").select2();
+
+        $('#all_users').change(function () {
+            if ($(this).is(':checked')) {
+                $(".filter_announcement").hide();
+            } else {
+                $(".filter_announcement").show();
+            }
+        });
+
+        $("#selectHospitalQ").change(function (e) {
+            $("#selectClinicQ").attr('disabled', 'disabled');
+            $.ajax({
+                url: '<?php echo route('getClinicsByHospitalId'); ?>',
+                method: 'POST',
+                data: {
+                    hospital_id: $(this).val()
+                },
+                headers: {token: '<?php echo csrf_token(); ?>'},
+                success: function (data) {
+                    $("#selectClinicQ").removeAttr('disabled').html(data).select2();
+                }
+            });
+        });
+
+        $("#selectClinicQ").change(function (e) {
+            $("#selectPhysicianQ").attr('disabled', 'disabled');
+            $.ajax({
+                url: '<?php echo route('getPhysicianByClinicIds'); ?>',
+                method: 'POST',
+                data: {
+                    clinic_id: $(this).val()
+                },
+                headers: {token: '<?php echo csrf_token(); ?>'},
+                success: function (data) {
+                    $("#selectPhysicianQ").removeAttr('disabled').html(data).select2();
+                }
+            });
+        });
+
+        $("#selectHospital").change(function (e) {
+            $("#selectClinic").attr('disabled', 'disabled');
+            $.ajax({
+                url: '<?php echo route('getClinicsByHospitalId'); ?>',
+                method: 'POST',
+                data: {
+                    hospital_id: $(this).val()
+                },
+                headers: {token: '<?php echo csrf_token(); ?>'},
+                success: function (data) {
+                    $("#selectClinic").removeAttr('disabled').html(data).select2();
+                }
+            });
+        });
+
+        $("#selectClinic").change(function (e) {
+            $("#selectPhysician").attr('disabled', 'disabled');
+            $.ajax({
+                url: '<?php echo route('getPhysicianByClinicId'); ?>',
+                method: 'POST',
+                data: {
+                    clinic_id: $(this).val(),
+                    user_experience_id: $("#user_experience_id").val(),
+                    user_specialty_id: $("#user_specialty_id").val(),
+                    bookable: true
+                },
+                headers: {token: '<?php echo csrf_token(); ?>'},
+                success: function (data) {
+                    $("#selectPhysician").removeAttr('disabled').html(data).select2();
+                }
+            });
+        });
+
+        $("#user_experience_id").change(function (e) {
+            if ($("#selectClinic").val()) {
+                $("#selectPhysician").attr('disabled', 'disabled');
+                $.ajax({
+                    url: '<?php echo route('getPhysicianByClinicId'); ?>',
+                    method: 'POST',
+                    data: {
+                        clinic_id: $("#selectClinic").val(),
+                        user_specialty_id: $("#user_specialty_id").val(),
+                        user_experience_id: $(this).val()
+                    },
+                    headers: {token: '<?php echo csrf_token(); ?>'},
+                    success: function (data) {
+                        $("#selectPhysician").removeAttr('disabled').html(data).select2();
+                    }
+                });
+            }
+        });
+
+        $("#user_specialty_id").change(function (e) {
+            if ($("#selectClinic").val()) {
+                $("#selectPhysician").attr('disabled', 'disabled');
+                $.ajax({
+                    url: '<?php echo route('getPhysicianByClinicId'); ?>',
+                    method: 'POST',
+                    data: {
+                        clinic_id: $("#selectClinic").val(),
+                        user_specialty_id: $(this).val(),
+                        user_experience_id: $("#user_experience_id").val()
+                    },
+                    headers: {token: '<?php echo csrf_token(); ?>'},
+                    success: function (data) {
+                        $("#selectPhysician").removeAttr('disabled').html(data).select2();
+                    }
+                });
+            }
+        });
+
+        <?php if(Input::old('hospital_id') != ''): ?>
+        $.ajax({
+            url: '<?php echo route('getClinicsByHospitalId'); ?>',
+            method: 'POST',
+            data: {
+                hospital_id: $("#selectHospital").val()
+            },
+            headers: {token: '<?php echo csrf_token(); ?>'},
+            success: function (data) {
+                $("#selectClinic").removeAttr('disabled').html(data);
+                        <?php if(!empty(Input::old('clinic_id'))): ?>
+                var clinic_id = '<?php echo Input::old('clinic_id'); ?>';
+                $("#selectClinic option[value=" + clinic_id + "]").attr('selected', 'selected');
+                <?php endif; ?>
+                $("#selectClinic").select2()
+            }
+        });
+        <?php endif; ?>
+        <?php if(isset($show_diagnosis) && !$show_diagnosis): ?>
+        $("#diagnosis_menu").remove();
+        <?php endif; ?>
+
+        <?php if(isset($show_pms) && !$show_pms): ?>
+        $("#pms_menu").remove();
+        <?php endif; ?>
+
+        <?php if($user->user_type_id == 7 && Session::has('edit_profile')): ?>
+        //            alert('Please Doctor, Your Profile Need To Update!');
+        <?php endif; ?>
+        ///////////////////////////////////sidebar-collapse//////////////////////////////////////
+                <?php if($c_user->user_type_id == \core\enums\UserRules::patientRelation): ?>
+        var screenSizes = $.AdminLTE.options.screenSizes;
+        //Enable sidebar push menu
+        if ($(window).width() > (screenSizes.sm - 1)) {
+            if ($("body").hasClass('sidebar-collapse')) {
+                $("body").removeClass('sidebar-collapse').trigger('expanded.pushMenu');
+            } else {
+                $("body").addClass('sidebar-collapse').trigger('collapsed.pushMenu');
+            }
+        }
+        //Handle sidebar push menu for small screens
+        else {
+            if ($("body").hasClass('sidebar-open')) {
+                $("body").removeClass('sidebar-open').removeClass('sidebar-collapse').trigger('collapsed.pushMenu');
+            } else {
+                $("body").addClass('sidebar-open').trigger('expanded.pushMenu');
+            }
+        }
+        <?php endif; ?>
+        /////////////////////////////////////////////////////////////////////////
+        //iCheck for checkbox and radio inputs
+        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+            radioClass: 'iradio_minimal-blue'
+        });
+        //Red color scheme for iCheck
+        $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
+            checkboxClass: 'icheckbox_minimal-red',
+            radioClass: 'iradio_minimal-red'
+        });
+        //Flat red color scheme for iCheck
+        $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+            checkboxClass: 'icheckbox_flat-green',
+            radioClass: 'iradio_flat-green'
+        });
+        $.fn.modal.Constructor.prototype.enforceFocus = function () {
+        }; // very important for select2 in popup
+    });
+
+    function withMe(id) {
+        $(id).waitMe({
+            effect: 'ios',
+            text: 'Please wait...',
+            bg: 'rgba(255,255,255,0.7)',
+            color: '#000',
+            maxSize: '',
+            source: 'img.svg'
+        });
+    }
+</script>
+<?php echo $__env->yieldContent('footer'); ?>
+<script>
+    $(function (e) {
+        $(".select2").css('width', '100%');
+        $('.showPopover').popover({
+            html: true
+        });
+
+        $('.datepicker, .datepicker2').on('show', function (e) {
+            if (e.date) {
+                $(this).data('stickyDate', e.date);
+            }
+            else {
+                $(this).data('stickyDate', null);
+            }
+        });
+
+        $('.datepicker, .datepicker2').on('hide', function (e) {
+            var stickyDate = $(this).data('stickyDate');
+
+            if (!e.date && stickyDate) {
+                $(this).datepicker('setDate', stickyDate);
+                $(this).data('stickyDate', null);
+            }
+        });
+    });
+</script>
+</body>
+</html>

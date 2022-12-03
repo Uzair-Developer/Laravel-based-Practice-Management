@@ -1,0 +1,140 @@
+<?php $__env->startSection('title'); ?>
+    - Patient Attend
+<?php $__env->stopSection(); ?>
+
+
+<?php $__env->startSection('header'); ?>
+    <link rel="stylesheet" href="<?php echo asset('plugins/datatables/dataTables.bootstrap.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('plugins/datepicker/datepicker3.css'); ?>">
+<?php $__env->stopSection(); ?>
+
+
+<?php $__env->startSection('footer'); ?>
+    <script src="<?php echo asset('plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+    <script src="<?php echo asset('plugins/datatables/dataTables.bootstrap.min.js'); ?>"></script>
+    <script src="<?php echo asset('plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>
+    <script>
+        $('#example1').DataTable({
+            "paging": false,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": true
+        });
+    </script>
+    <script>
+        $(function () {
+            $('.datepicker2').datepicker({
+                todayHighlight: true,
+                autoclose: true
+            });
+        });
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <section class="content-header">
+        <h1>
+            Patient Attend
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <!-- form start -->
+                    <div class="box-header">
+                        Search
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <?php echo Form::open(array('role'=>"form", 'method' => 'GET')); ?>
+
+                    <div class="box-body">
+                        <div class="form-group col-md-3">
+                            <label>Hospital</label>
+                            <select id="selectHospital2" name="hospital_id" class="form-control select2">
+                                <option value="">Choose</option>
+                                <?php foreach($hospitals as $val): ?>
+                                    <option value="<?php echo $val['id']; ?>" <?php if(Input::get('hospital_id') == $val['id']): ?>
+                                    selected <?php endif; ?>><?php echo $val['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>Reservation Code</label>
+                            <input type="text" name="reservation_code" value="<?php echo Input::get('reservation_code'); ?>"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Date</label>
+                            <input type="text" data-date-format="yyyy-mm-dd" value="<?php echo Input::get('date'); ?>"
+                                   name="date" class="form-control datepicker2">
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                        <a class="btn btn-default" href="<?php echo route('listPatientAttend'); ?>">Clear</a>
+                    </div>
+                    <?php echo Form::close(); ?>
+
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="example1">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15px">#</th>
+                                    <th>Status</th>
+                                    <th>Reservation Code</th>
+                                    <th>Patient Name</th>
+                                    <th>Patient Phone</th>
+                                    <th>Clinic Name</th>
+                                    <th>Physician Name</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach($patients as $val): ?>
+                                    <tr>
+                                        <td><?php echo $val['id']; ?></td>
+                                        <td>
+                                            <?php if($val['status'] == 1): ?>
+                                                <span style="color: green">Attend</span>
+                                            <?php else: ?>
+                                                <span style="color: red">Not Attend</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo $val['reservation_code']; ?></td>
+                                        <td><?php echo $val['patient_name']; ?></td>
+                                        <td><?php echo $val['patient_phone']; ?></td>
+                                        <td><?php echo $val['clinic_name']; ?></td>
+                                        <td><?php echo $val['physician_name']; ?></td>
+                                        <td><?php echo $val['created_by']; ?></td>
+                                        <td><?php echo $val['created_at']; ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            <?php if(isset($inputs['hospital_id']) && $inputs['hospital_id']): ?>
+                                <?php echo $patients->appends(Input::except('_token'))->links(); ?>
+
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layout/main', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -1,0 +1,165 @@
+<?php $__env->startSection('title'); ?>
+    - Complaints
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('header'); ?>
+    <link rel="stylesheet" href="<?php echo asset('plugins/datatables/dataTables.bootstrap.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('plugins/datepicker/datepicker3.css'); ?>">
+<?php $__env->stopSection(); ?>
+
+
+<?php $__env->startSection('footer'); ?>
+    <script src="<?php echo asset('plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+    <script src="<?php echo asset('plugins/datatables/dataTables.bootstrap.min.js'); ?>"></script>
+    <script src="<?php echo asset('plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>
+    <script>
+
+        $(".ask-me").click(function (e) {
+            e.preventDefault();
+            if (confirm('Are You Sure?')) {
+                window.location.replace($(this).attr('href'));
+            }
+        });
+        $('.datepicker2').datepicker({
+            todayHighlight: true,
+            autoclose: true
+        });
+
+        $('#example1').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": true
+        });
+        $(function () {
+
+        });
+    </script>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <section class="content-header">
+        <h1>
+            List Complaints
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('complain.add')): ?>
+                <div class="col-md-2">
+                    <a href="<?php echo route('addComplain'); ?>">
+                        <button class="btn btn-block btn-default">Add Complaint</button>
+                    </a>
+                    <br>
+                </div>
+            <?php endif; ?>
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        Search
+                        <button type="button" class="btn btn-box-tool pull-right"
+                                data-widget="collapse">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                    <!-- /.box-header -->
+                    <?php echo Form::open(array('role'=>"form",'method' => 'GET')); ?>
+
+                    <div class="box-body">
+
+                        <div class="form-group col-md-3">
+                            <label>Departments</label>
+                            <br>
+                            <select name="department_id" class="form-control select2">
+                                <option value="">Choose</option>
+                                <?php foreach($departments as $val): ?>
+                                    <option value="<?php echo $val['id']; ?>" <?php if(Input::get('department_id') == $val['id']): ?>
+                                    selected <?php endif; ?>><?php echo $val['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>Status</label>
+                            <br>
+                            <select name="read" class="form-control select2">
+                                <option value="">Choose</option>
+                                <option value="1" <?php if(Input::get('read') == 1): ?>
+                                selected <?php endif; ?>>Read
+                                </option>
+                                <option value="2" <?php if(Input::get('read') == 2): ?>
+                                selected <?php endif; ?>>Not Read
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                        <a href="<?php echo route('listComplain'); ?>" class="btn btn-default">Clear</a>
+                    </div>
+                    <?php echo Form::close(); ?>
+
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="example1">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15px">#</th>
+                                    <th>Patient Name</th>
+                                    <th>Department Name</th>
+                                    <th>Created By</th>
+                                    <th>Read?</th>
+                                    <th>Notes</th>
+                                    <th style="width: 150px">Options</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach($complains as $val): ?>
+                                    <tr>
+                                        <td><?php echo $val['id']; ?></td>
+                                        <td><div style="width: 200px;"><?php echo $val['patient_name']; ?></div></td>
+                                        <td><?php echo $val['department_name']; ?></td>
+                                        <td><div style="width: 200px;"><?php echo $val['create_by']; ?></div></td>
+                                        <td><?php echo $val['read'] == '1' ? 'Read' : 'Not Read'; ?></td>
+                                        <td><?php echo $val['notes']; ?></td>
+                                        <td>
+                                            <div style="width: 190px;">
+                                            <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('complain.edit')): ?>
+                                                <?php if($c_user->user_type_id == 1 || $val['created_by'] == $c_user->id): ?>
+                                                    <a class="btn btn-sm btn-warning"
+                                                       href="<?php echo route('editComplain', $val['id']); ?>">Edit</a>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                            <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('complain.delete')): ?>
+                                                <?php if($c_user->user_type_id == 1 || $val['created_by'] == $c_user->id): ?>
+                                                    <a class="btn btn-sm btn-danger"
+                                                       href="<?php echo route('deleteComplain', $val['id']); ?>">Delete</a>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                            <?php if($val['read'] != '1'): ?>
+                                                <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('complain.read')): ?>
+                                                    <a class="btn btn-sm btn-info"
+                                                       href="<?php echo route('readComplain', $val['id']); ?>">Read</a>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layout/main', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

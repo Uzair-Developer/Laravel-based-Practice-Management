@@ -1,0 +1,276 @@
+<?php $__env->startSection('title'); ?>
+    - Users
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('header'); ?>
+    <link rel="stylesheet" href="<?php echo asset('plugins/datatables/dataTables.bootstrap.css'); ?>">
+<?php $__env->stopSection(); ?>
+
+
+<?php $__env->startSection('footer'); ?>
+    <script src="<?php echo asset('plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+    <script src="<?php echo asset('plugins/datatables/dataTables.bootstrap.min.js'); ?>"></script>
+    <script src="<?php echo asset('plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>
+    <script>
+        $('#example1').DataTable({
+            "paging": false,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": true
+        });
+        $(function () {
+
+            $(".ask-me").click(function (e) {
+                e.preventDefault();
+                msg = $(this).attr('show-msg');
+                if (msg) {
+                    if (confirm('Are You Sure? (' + msg + ')')) {
+                        window.location.replace($(this).attr('href'));
+                    }
+                } else {
+                    if (confirm('Are You Sure?')) {
+                        window.location.replace($(this).attr('href'));
+                    }
+                }
+            });
+
+            $(".openModal").click(function (e) {
+                var user_id = $(this).attr('user_id');
+                $("#user_id").val(user_id);
+                $("#myModal").modal('show');
+            })
+        })
+    </script>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+    <section class="content-header">
+        <h1>
+            List Users
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <!-- form start -->
+                    <div class="box-header">
+                        Search
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <?php echo Form::open(array('role'=>"form", 'method' => 'GET')); ?>
+
+                    <div class="box-body">
+                        <div class="form-group col-md-3">
+                            <label>Name</label>
+                            <input type="text" name="name" value="<?php echo Input::get('name'); ?>" class="form-control">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Status</label>
+                            <select name="activated" class="form-control select2">
+                                <option value="">Choose</option>
+                                <option value="1"
+                                        <?php if(Input::get('activated') == 1): ?>
+                                        selected <?php endif; ?>>Active
+                                </option>
+                                <option value="0"
+                                        <?php if(Input::get('activated') === '0'): ?>
+                                        selected <?php endif; ?>>InActive
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Role</label>
+                            <select name="user_type_id" class="form-control select2">
+                                <option value="">Choose</option>
+                                <?php foreach($userTypes as $val): ?>
+                                    <option value="<?php echo $val['id']; ?>"
+                                            <?php if(Input::get('user_type_id') == $val['id']): ?>
+                                            selected <?php endif; ?>><?php echo $val['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Group Name</label>
+                            <select name="group_id" class="form-control select2">
+                                <option value="">Choose</option>
+                                <?php foreach($groups as $val): ?>
+                                    <option value="<?php echo $val['id']; ?>"
+                                            <?php if(Input::get('group_id') == $val['id']): ?>
+                                            selected <?php endif; ?>><?php echo $val['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                        <a class="btn btn-default" href="<?php echo route('users'); ?>">Clear</a>
+                    </div>
+                    <?php echo Form::close(); ?>
+
+                </div>
+            </div>
+            <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('user.add')): ?>
+                <div class="col-md-2">
+                    <a href="<?php echo route('addUser'); ?>">
+                        <button class="btn btn-block btn-default">Add User</button>
+                    </a>
+                </div>
+            <?php endif; ?>
+            <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('user.printExcel')): ?>
+                <div class="col-md-2">
+                    <?php echo Form::open(array('role'=>"form", 'route' => 'printExcelUsers')); ?>
+
+                    <?php if(Input::except('_token')): ?>
+                        <?php foreach(Input::except('_token') as $key => $val): ?>
+                            <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $val; ?>">
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                    <button class="btn btn-primary" type="submit">Download Excel</button>
+                    <?php echo Form::close(); ?>
+
+                </div>
+            <?php endif; ?>
+            <?php if(app('production')): ?>
+                <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('user.his_import_physician')): ?>
+                    <div class="col-md-3">
+                        <a href="<?php echo route('hisImportPhysician'); ?>">
+                            <button class="btn btn-block btn-default">HIS Import Physician</button>
+                        </a>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+            <div class="col-md-12" style="margin-top: 10px;">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="example1">
+                                <thead>
+                                <tr>
+                                    <th style="width: 15px">#</th>
+                                    <th>Full Name</th>
+                                    <th>User Name</th>
+                                    <th>Status</th>
+                                    <th>Role Name</th>
+                                    <th>Group Name</th>
+                                    <th>Options</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach($users as $user): ?>
+                                    <tr>
+                                        <td><?php echo $user['id']; ?></td>
+                                        <td>
+                                            <div style="width: 200px;"><?php echo $user['full_name']; ?></div>
+                                        </td>
+                                        <td><?php echo $user['user_name']; ?></td>
+                                        <td>
+                                            <?php if($user['activated'] == 1): ?>
+                                                Active
+                                            <?php else: ?>
+                                                <span style="color: red">InActive</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div style="width: 150px;"><?php echo $user['role_name']; ?></div>
+                                        </td>
+                                        <td>
+                                            <div style="width: 200px;"><?php echo $user['group_name']; ?></div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" style="width:450px;">
+
+                                                <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('user.edit')): ?>
+                                                    <a class="btn btn-default"
+                                                       href="<?php echo route('editUser', $user['id']); ?>">Edit</a>
+                                                <?php endif; ?>
+                                                <?php /*<?php if($c_user->user_type_id == 1 || $c_user->user_type_id == 2): ?>*/ ?>
+                                                <?php /*<a href="<?php echo route('addSecurity', $user['id']); ?>">Permissions</a>*/ ?>
+                                                <?php /**/ ?>
+                                                <?php /*<?php endif; ?>*/ ?>
+                                                <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('user.changeStatus')): ?>
+
+                                                    <?php if($user['activated'] == 1): ?>
+                                                        <a <?php if($user['user_type_id'] == 7): ?>
+                                                           show-msg="All Reservations Will Convert To be Cancelled"
+                                                           <?php endif; ?>
+                                                           class="ask-me btn btn-default"
+                                                           href="<?php echo route('changeStatus', $user['id']); ?>">
+                                                            Deactivate</a>
+                                                    <?php else: ?>
+                                                        <a class="ask-me btn btn-default"
+                                                           href="<?php echo route('changeStatus', $user['id']); ?>">
+                                                            Activate</a>
+                                                    <?php endif; ?>
+
+                                                <?php endif; ?>
+                                                <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('user.resetPassword')): ?>
+                                                    <a class="ask-me btn btn-default"
+                                                       href="<?php echo route('resetPassword', $user['id']); ?>">Reset
+                                                        Password</a>
+
+                                                <?php endif; ?>
+                                                <?php if($c_user->user_type_id == 1 || $c_user->hasAccess('user.changePassword')): ?>
+                                                    <a style="cursor: pointer;" class="openModal btn btn-default"
+                                                       user_id="<?php echo $user['id']; ?>">Change Password</a>
+                                                <?php endif; ?>
+                                                <?php /*<?php if($c_user->user_type_id == 1 || $c_user->hasAccess('user.delete')): ?>*/ ?>
+                                                <?php /*<a class="ask-me"*/ ?>
+                                                <?php /*href="<?php echo route('deleteUser', $user['id']); ?>">Delete</a>*/ ?>
+                                                <?php /*<?php endif; ?>*/ ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            <?php echo $links; ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                                aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Change Password</h4>
+                </div>
+                <?php echo Form::open(array('role'=>"form", 'route' => 'changePassword')); ?>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input required name="password" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Password Confirmation</label>
+                        <input required name="password_confirmation" class="form-control"/>
+                        <input name="user_id" id="user_id" type="hidden"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <?php echo Form::close(); ?>
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layout/main', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

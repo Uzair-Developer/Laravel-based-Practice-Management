@@ -1,0 +1,82 @@
+html {
+    margin: 0;
+}
+
+#header {
+    /*float: right;*/
+}
+
+#header img {
+    display: block;
+    margin: auto;
+    width: 6cm;
+}
+
+div.vertical-line {
+    /* Line width */
+    background-color: black;
+    width: 18cm;
+    float: right;
+}
+
+#h {
+    width: 100px;
+    height: 100px;
+    margin-top: 30px;
+    margin-left: 60%;
+    font-size: 10px;
+    color: #000;
+}
+
+#tab1 {
+    float: right;
+    margin-left: 500px;
+    width: "800px";
+    margin-bottom: 10px;
+}
+
+#divb {
+    width: "1000px";
+    border-color: "#0000";
+    border-width: 20px;
+    float: right;
+    background-color: red;
+
+}
+
+h3, h4, h5, h6 {
+    direction: rtl;
+    margin: 2px;
+    font-size: 14px;
+    color: red;
+}
+
+#data {
+    direction: rtl;
+    width: "800px";
+
+}
+
+#exten {
+    direction: rtl;
+
+}
+
+#data table td, #exten table td, #custom table td, #problem table td, #list table td, #agent table td, #dataCustRec table td {
+    border: 0;
+}
+
+#custom, #problem, #tailer {
+    direction: rtl;
+}
+
+#list, #agent, #dataCustRec {
+    direction: rtl;
+
+    margin-top: 5px;
+}
+
+.arabic-word{
+    font-size: 22px;
+}
+
